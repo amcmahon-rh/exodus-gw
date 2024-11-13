@@ -43,6 +43,12 @@ ALIAS_SCHEMA = {
                 "pattern": PATH_PATTERN,
                 "description": "Target of the alias, relative to CDN root.",
             },
+            "exclude_paths": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Paths for which alias will not be resolved, "
+                               "treated as an unanchored regex."
+            }
         },
     },
     "uniqueItems": True,

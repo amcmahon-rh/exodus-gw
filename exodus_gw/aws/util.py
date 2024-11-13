@@ -161,7 +161,7 @@ class RequestReader:
         return cls(request)
 
 
-def uri_alias(uri: str, aliases: list[tuple[str, str]]) -> list[str]:
+def uri_alias(uri: str, aliases: list[tuple[str, str, list[str]]]) -> list[str]:
     # Resolve every alias between paths within the uri (e.g.
     # allow RHUI paths to be aliased to non-RHUI).
     #
@@ -187,7 +187,7 @@ def uri_alias(uri: str, aliases: list[tuple[str, str]]) -> list[str]:
 def uri_alias_recurse(
     accum: list[str],
     uri: str,
-    aliases: list[tuple[str, str]],
+    aliases: list[tuple[str, str, list[str]]],
     depth=0,
     maxdepth=4,
 ):
@@ -217,7 +217,9 @@ def uri_alias_recurse(
         accum.insert(0, new_uri)
         return out
 
-    for src, dest in aliases:
+    for src, dest, exclude_paths in aliases:
+        if any([exclusion in uri for exclusion in exclude_paths]):
+            continue
         if uri.startswith(src + "/") or uri == src:
             new_uri = uri.replace(src, dest, 1)
             LOG.debug(
@@ -252,8 +254,8 @@ def uri_alias_recurse(
                 # But this is not desired behavior, we know that every alias is intended
                 # to be resolved in the URL a maximum of once, hence this adjustment.
                 sub_aliases = [
-                    (subsrc, subdest)
-                    for (subsrc, subdest) in aliases
+                    (subsrc, subdest, exc)
+                    for (subsrc, subdest, exc) in aliases
                     if (subsrc, subdest) != (src, dest)
                 ]
 
@@ -267,7 +269,7 @@ def uri_alias_recurse(
 
 
 def uris_with_aliases(
-    uris: Iterable[str], aliases: list[tuple[str, str]]
+    uris: Iterable[str], aliases: list[tuple[str, str, list[str]]]
 ) -> list[str]:
     # Given a collection of uris and aliases, returns a new collection of uris
     # post alias resolution, including *both* sides of each alias when applicable.

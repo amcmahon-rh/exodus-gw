@@ -1,6 +1,7 @@
 import logging
 import re
 from datetime import datetime
+from typing import Optional
 from enum import Enum
 from os.path import join, normpath
 from uuid import UUID
@@ -318,6 +319,10 @@ class Alias(BaseModel):
     )
     dest: str = Field(
         ..., description="Target of the alias, relative to CDN root."
+    )
+    exclude_paths: Optional[list[str]] = Field(
+        ..., description="Paths for which alias will not be resolved, "
+                         "treated as an unanchored regex."
     )
 
 

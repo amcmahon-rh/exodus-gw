@@ -146,6 +146,7 @@ def test_deploy_config_with_flush(
         {
             "dest": "/content/testproduct/1.2.0",
             "src": "/content/testproduct/1",
+            "exclude_paths": ["/files/", "/images/", "/iso/"]
         },
     ]
     worker.deploy_config(updated_config, "test", NOW_UTC)

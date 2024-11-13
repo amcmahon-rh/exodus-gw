@@ -17,6 +17,9 @@ from exodus_gw.dramatiq import Broker
 from .async_utils import BlockDetector
 
 
+DEFAULT_EXLUDE_PATHS = ["/files/", "/images/", "/iso/"]
+
+
 async def fake_aexit_instancemethod(self, exc_type, exc_val, exc_tb):
     pass
 
@@ -267,24 +270,39 @@ def fake_config():
             },
         },
         "origin_alias": [
-            {"src": "/content/origin", "dest": "/origin"},
-            {"src": "/origin/rpm", "dest": "/origin/rpms"},
+            {
+                "src": "/content/origin",
+                "dest": "/origin",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
+            },
+            {
+                "src": "/origin/rpm",
+                "dest": "/origin/rpms",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
+            },
         ],
         "releasever_alias": [
             {
                 "src": "/content/dist/rhel8/8",
                 "dest": "/content/dist/rhel8/8.5",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
             },
             {
                 "src": "/content/testproduct/1",
                 "dest": "/content/testproduct/1.1.0",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
             },
         ],
         "rhui_alias": [
-            {"src": "/content/dist/rhel8/rhui", "dest": "/content/dist/rhel8"},
+            {
+                "src": "/content/dist/rhel8/rhui",
+                "dest": "/content/dist/rhel8",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
+            },
             {
                 "src": "/content/testproduct/rhui",
                 "dest": "/content/testproduct",
+                "exlude_paths": DEFAULT_EXLUDE_PATHS,
             },
         ],
     }
