@@ -487,6 +487,24 @@ def test_create_requests_splits_batches(mock_boto3_client, fake_publish, caplog)
         assert len(request["my-table"]) <= 25
 
 
+def test_batch_write_item_limit(mock_boto3_client, fake_publish, caplog):
+    # This test is currently irrelevant. I'm leaving it here incase the
+    # create_request(s) function changes again.
+
+    items = fake_publish.items * 9
+    ddb = dynamodb.DynamoDB("test", Settings(), NOW_UTC)
+
+    requests = ddb.create_requests(items)
+    # merge the requests into one.
+    requests[0]["my-table"].append(requests[1]["my-table"])
+
+    with pytest.raises(ValueError) as exc_info:
+        ddb.batch_write(requests[0])
+
+    assert "Cannot process more than 25 items per request" in caplog.text
+    assert "Request contains too many items" in str(exc_info.value)
+
+
 def test_batch_write_deadline(mock_boto3_client, fake_publish, caplog):
     """Ensure deadline is respected by backoff/retry.
 
